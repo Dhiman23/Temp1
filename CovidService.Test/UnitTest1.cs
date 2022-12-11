@@ -15,8 +15,12 @@ namespace CovidService.Test
 
     public class CovidServicesControllerTests
     {
+
+
         private CovidServicesController _covidServicesController;
         private Mock<ICovidDetailsContract> _covidDetailsContractMock;
+
+        private CovidDetailsRepository _covidDetailsRepository;
 
         [SetUp]
         public void SetUp()
@@ -24,29 +28,23 @@ namespace CovidService.Test
             // Arrange
             _covidDetailsContractMock = new Mock<ICovidDetailsContract>();
             _covidServicesController = new CovidServicesController(_covidDetailsContractMock.Object);
+            _covidDetailsRepository = new CovidDetailsRepository();
+
         }
+
+
+
 
         [Test]
         public void GetAll_ReturnsOkResult_WhenDataIsAvailable()
         {
             // Arrange
-            var covidDetails = new List<CovidDetails>
-        {
-            new CovidDetails { CountryName = "USA", InfectedCases = 100, DeceasedCases = 10, RecoveredCases = 20 },
-            new CovidDetails { CountryName = "India", InfectedCases = 200, DeceasedCases = 20, RecoveredCases = 40 }
-        };
-            _covidDetailsContractMock
-                .Setup(x => x.GetCovidDetails())
-                .Returns(covidDetails);
+            var covidDetails = _covidDetailsRepository.GetCovidDetails();
 
-            // Act
-            var result = _covidServicesController.GetAll();
+            //Assert
+            Assert.AreEqual(230, covidDetails.Count);
+            
 
-            // Assert
-            var okObjectResult = result as OkObjectResult;
-            Assert.IsNotNull(okObjectResult);
-            Assert.AreEqual(200, okObjectResult.StatusCode);
-            Assert.AreEqual(covidDetails, okObjectResult.Value);
         }
 
         [Test]
@@ -74,19 +72,19 @@ namespace CovidService.Test
         public void Get_ReturnsOkResult_WhenDataIsAvailable()
         {
             // Arrange
-            var covidDetails = new CovidDetails { CountryName = "USA", InfectedCases = 100, DeceasedCases = 10, RecoveredCases = 20 };
-            _covidDetailsContractMock
-                .Setup(x => x.GetCovidDetail("USA"))
-                .Returns(covidDetails);
+            List<CovidDetails> covidDetails = new List<CovidDetails>();
+            //ACT
+            var covidDetail = _covidDetailsRepository.GetCovidDetail("USA");
+            if(covidDetail != null)
+            covidDetails.Add(covidDetail);
+            
+            //Assert
 
-            // Act
-            var result = _covidServicesController.Get("USA");
+            Assert.AreEqual(1, covidDetails.Count); 
 
-            // Assert
-            var okObjectResult = result as OkObjectResult;
-            Assert.IsNotNull(okObjectResult);
-            Assert.AreEqual(200, okObjectResult.StatusCode);
-            Assert.AreEqual(covidDetails, okObjectResult.Value);
+
+           
+        
         }
 
 

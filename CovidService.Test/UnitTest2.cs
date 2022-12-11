@@ -72,8 +72,7 @@ namespace CovidService.Test
                 Password = "testpassword"
             };
             var identityResult = IdentityResult.Success;
-            _userServicesContractMock
-                .Setup(x => x.SignUpAsync(signUpModel))
+            _userServicesContractMock.Setup(x => x.SignUpAsync(signUpModel))
                 .ReturnsAsync(identityResult);
 
             // Act
